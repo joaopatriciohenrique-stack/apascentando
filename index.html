@@ -5714,9 +5714,30 @@
 
         // 2) Ao abrir: baixa os dados do Firebase para o navegador antes do app iniciar
         try {
-          const xhr = new XMLHttpRequest();
-          xhr.open("GET", `${BASE}/${ROOT}.json`, false);
-          xhr.send();
+  const response = await fetch(`${BASE}/${ROOT}.json`, {
+    cache: "no-store"
+  });
+
+  if (response.ok) {
+    const remote = await response.json();
+    const pending = getPending();
+
+    KEYS.forEach((key) => {
+      if (pending.includes(key)) return;
+
+      if (remote[key] !== undefined && remote[key] !== null) {
+        nativeSet.call(localStorage, key, JSON.stringify(remote[key]));
+      } else if (localStorage.getItem(key) !== null) {
+        setPending([...getPending(), key]);
+      }
+    });
+  } else {
+    window.__firebaseSync.lastError = "HTTP " + response.status;
+  }
+} catch (err) {
+  window.__firebaseSync.lastError = String(err);
+  console.warn("[Firebase] sem conexão, usando dados locais", err);
+}
           if (xhr.status === 200) {
             const remote = JSON.parse(xhr.responseText || "null") || {};
             const pending = getPending();
