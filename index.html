@@ -5738,24 +5738,6 @@
   window.__firebaseSync.lastError = String(err);
   console.warn("[Firebase] sem conexão, usando dados locais", err);
 }
-          if (xhr.status === 200) {
-            const remote = JSON.parse(xhr.responseText || "null") || {};
-            const pending = getPending();
-            KEYS.forEach((key) => {
-              if (pending.includes(key)) return; // alteração local ainda não enviada
-              if (remote[key] !== undefined && remote[key] !== null) {
-                nativeSet.call(localStorage, key, JSON.stringify(remote[key]));
-              } else if (localStorage.getItem(key) !== null) {
-                setPending([...getPending(), key]); // envia dados locais que o banco não tem
-              }
-            });
-          } else {
-            window.__firebaseSync.lastError = "HTTP " + xhr.status;
-          }
-        } catch (err) {
-          window.__firebaseSync.lastError = String(err);
-          console.warn("[Firebase] sem conexão, usando dados locais", err);
-        }
 
         // 3) Toda gravação local também vai para o Firebase
         Storage.prototype.setItem = function (key, value) {
