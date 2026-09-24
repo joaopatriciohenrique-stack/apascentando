@@ -782,7 +782,7 @@
     $('#loginForm').addEventListener('submit',e=>{
       e.preventDefault();
       const input=$('#accessPassword');
-      if(input.value===ACCESS_PASSWORD){unlockApp();return}
+     firebase.auth().signInWithEmailAndPassword(email, password)
       input.setAttribute('aria-invalid','true');
       $('#loginError').textContent='Senha incorreta. Verifique e tente novamente.';
       input.select();
